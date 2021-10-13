@@ -17,3 +17,8 @@ self.addEventListener('activate', (event) => {
   // Become available to all pages.
   event.waitUntil(self.clients.claim());
 });
+
+// @TODO: remove after testing.
+self.addEventListener('push', function (PushEvent) {
+  console.log(PushEvent.data.json());
+});

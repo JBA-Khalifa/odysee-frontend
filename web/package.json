@@ -36,6 +36,7 @@
     "lbryinc": "lbryio/lbryinc#8f9a58bfc8312a65614fd7327661cdcc502c4e59",
     "mysql": "^2.17.1",
     "node-fetch": "^2.6.1",
+    "ua-parser-js": "^0.7.28",
     "uuid": "^8.3.0"
   },
   "devDependencies": {
