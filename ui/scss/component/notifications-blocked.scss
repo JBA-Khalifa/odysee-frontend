@@ -6,7 +6,8 @@
 }
 
 .notificationsBlocked__icon {
-  padding-right: var(--spacing-m);
+  flex-shrink: 0;
+  margin-right: var(--spacing-m);
 }
 
 .notificationsBlocked__subText {

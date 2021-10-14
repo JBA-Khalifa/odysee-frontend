@@ -10,7 +10,7 @@ import Icon from 'component/common/icon';
 const BrowserNotificationsBlocked = () => {
   return (
     <div className="notificationsBlocked">
-      <Icon className="notificationsBlocked__icon" color="#E50054" icon={ICONS.ALERT} size={58} />
+      <Icon className="notificationsBlocked__icon" color="#E50054" icon={ICONS.ALERT} size={32} />
       <div>
         <span>{__('Heads up: browser notifications are currently blocked in this browser.')}</span>
         <span className={'notificationsBlocked__subText'}>

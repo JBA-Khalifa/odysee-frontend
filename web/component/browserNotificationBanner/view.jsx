@@ -18,7 +18,7 @@ export const BrowserNotificationBanner = () => {
   return (
     <div className="browserNotificationsBanner notice-message">
       <div className="browserNotificationsBanner__overview">
-        <Icon className="browserNotificationsBanner__icon" color="white" icon={ICONS.NOTIFICATION} size={32} />
+        <Icon className="browserNotificationsBanner__icon" icon={ICONS.NOTIFICATION} size={32} />
         <p>
           <strong>{__('Realtime push notifications straight to your browser.')}</strong>
           <br />

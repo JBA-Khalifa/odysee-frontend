@@ -1,26 +1,29 @@
 // @flow
 import { Lbryio } from 'lbryinc';
 import { initializeApp } from 'firebase/app';
-import { getMessaging, getToken, deleteToken, isSupported } from 'firebase/messaging';
+import { getMessaging, getToken, deleteToken } from 'firebase/messaging';
 import { browserData } from '$web/src/ua';
 import { firebaseConfig, vapidKey } from '$web/src/firebase-config';
 
 const app = initializeApp(firebaseConfig);
 const messaging = getMessaging(app);
 
-export const pushSupported: boolean = isSupported();
+const metaData = () => {
+  const isMobile = window.navigator.userAgentData?.mobile || false;
+  const browserName = browserData.browser?.name || 'unknown';
+  const osName = browserData.os?.name || 'unknown';
+
+  return {
+    type: `web-${isMobile ? 'mobile' : 'desktop'}`,
+    name: `${browserName}-${osName}`,
+  };
+};
 
 export const pushSubscribe = async (): Promise<boolean> => {
   try {
-    // $FlowIssue[incompatible-type]
-    const swRegistration = await navigator.serviceWorker.ready;
+    const swRegistration: ?ServiceWorkerRegistration = await navigator.serviceWorker?.ready;
     const fcmToken = await getToken(messaging, { serviceWorkerRegistration: swRegistration, vapidKey });
-
-    const type = `web-${window.navigator.userAgentData?.mobile ? 'mobile' : 'desktop'}`;
-    const name = `${browserData.browser?.name}-${browserData.os?.name}`;
-
-    await Lbryio.call('cfm', 'add', { token: fcmToken, type, name });
-
+    await Lbryio.call('cfm', 'add', { token: fcmToken, ...metaData() });
     return true;
   } catch (err) {
     return false;
@@ -28,15 +31,13 @@ export const pushSubscribe = async (): Promise<boolean> => {
 };
 
 export const pushUnsubscribe = async (): Promise<boolean> => {
-  // $FlowIssue[incompatible-type]
-  const swRegistration = await navigator.serviceWorker.ready;
+  const swRegistration: ?ServiceWorkerRegistration = await navigator.serviceWorker?.ready;
   const fcmToken = await getToken(messaging, { serviceWorkerRegistration: swRegistration, vapidKey });
   if (!fcmToken) return true;
 
   try {
     await deleteToken(messaging);
-    // @note: conscious decision not to ignore errors.
-    Lbryio.call('cfm', 'remove', { token: fcmToken });
+    Lbryio.call('cfm', 'remove', { token: fcmToken }); // @note: conscious decision to not handle response/errors.
     return true;
   } catch (err) {
     return false;
@@ -44,12 +45,8 @@ export const pushUnsubscribe = async (): Promise<boolean> => {
 };
 
 export const pushIsSubscribed = async (): Promise<boolean> => {
-  // $FlowIssue[incompatible-type]
-  const swRegistration = await navigator.serviceWorker.ready;
-  return (await swRegistration.pushManager.getSubscription()) !== null;
-};
-
-export const pushCreateNotification = async (data: Object) => {
-  // $FlowIssue[incompatible-type]
-  navigator.serviceWorker.controller.postMessage({ type: 'BROWSER_NOTIFICATION', data });
+  const swRegistration: ?ServiceWorkerRegistration = await navigator.serviceWorker?.ready;
+  return swRegistration && swRegistration.pushManager
+    ? (await swRegistration.pushManager.getSubscription()) !== null
+    : false;
 };
